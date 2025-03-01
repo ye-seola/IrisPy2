@@ -1,0 +1,34 @@
+[project]
+name = "irispy2"
+description = ""
+authors = [{ name = "ye-seola", email = "ye-seola@proton.me" }]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "typer (>=0.15.2,<0.16.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "loguru (>=0.7.3,<0.8.0)",
+    "fastapi (>=0.115.10,<0.116.0)",
+    "uvicorn (>=0.34.0,<0.35.0)",
+    "pure-python-adb (==0.3.0.dev)",
+]
+dynamic = ["version"]
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+version = "0.0.0"
+
+[tool.poetry.scripts]
+iris-tools = "irispy2.cli:app"
+
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"

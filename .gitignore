@@ -1,0 +1,6 @@
+.venv/
+.poetry/
+__pycache__/
+dist/
+*.log
+.DS_Store
