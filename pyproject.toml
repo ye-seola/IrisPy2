@@ -3,7 +3,7 @@ name = "irispy2"
 description = ""
 authors = [{ name = "ye-seola", email = "ye-seola@proton.me" }]
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.9,<4.0"
 dependencies = [
     "typer (>=0.15.2,<0.16.0)",
     "requests (>=2.32.3,<3.0.0)",
