@@ -367,7 +367,7 @@ def iris_log(
         logger.success(f"{path} 에 로그가 추출되었습니다")
         return
 
-    print(device.shell(f"cat {IRIS_LOG_PATH}").strip())
+    print(device.shell(f"tail {IRIS_LOG_PATH}").strip())
 
 
 @app.command(short_help="연결된 기기의 IP를 확인합니다")
