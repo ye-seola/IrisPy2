@@ -11,7 +11,7 @@ class Bot:
     def __init__(self, iris_endpoint: str):
         self.emitter = EventEmitter()
 
-        self.__api = IrisAPI(iris_endpoint)
+        self.api = IrisAPI(iris_endpoint)
 
         self.fastapi = FastAPI()
         self.fastapi.add_api_route(
@@ -32,21 +32,23 @@ class Bot:
     def __process_iris_request(self, req: IrisRequest):
         v = {}
         try:
-            v = json.loads(req.meta["v"])
+            v = json.loads(req.raw["v"])
         except Exception:
             pass
 
-        room = Room(id=int(req.meta["chat_id"]), name=req.room)
-        sender = User(id=int(req.meta["user_id"]), name=req.sender)
+        room = Room(id=int(req.raw["chat_id"]), name=req.room)
+        sender = User(id=int(req.raw["user_id"]), name=req.sender)
         message = Message(
-            id=int(req.meta["id"]),
-            type=int(req.meta["type"]),
-            msg=req.meta["message"],
-            attachment=req.meta["attachment"],
+            id=int(req.raw["id"]),
+            type=int(req.raw["type"]),
+            msg=req.raw["message"],
+            attachment=req.raw["attachment"],
             v=v,
         )
 
-        chat = ChatContext(room=room, sender=sender, message=message, api=self.__api)
+        chat = ChatContext(
+            room=room, sender=sender, message=message, raw=req.raw, api=self.api
+        )
         self.__process_chat(chat)
 
     def __on_iris_request(self, req: IrisRequest, background_tasks: BackgroundTasks):

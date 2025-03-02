@@ -28,12 +28,16 @@ class ChatContext:
     room: Room
     sender: User
     message: Message
+    raw: dict
 
-    def __init__(self, room: Room, sender: User, message: Message, api: IrisAPI):
+    def __init__(
+        self, room: Room, sender: User, message: Message, raw: dict, api: IrisAPI
+    ):
         self.__api = api
         self.room = room
         self.sender = sender
         self.message = message
+        self.raw = raw
 
     def reply(self, message: str):
         self.__api.reply(self.room.id, message)
