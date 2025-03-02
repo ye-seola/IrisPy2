@@ -228,7 +228,7 @@ def iris_install_ask(device: Device):
 
 
 @app.command(short_help="Iris.dex 설치와 설정을 진행합니다")
-def iris_install(serial: str = None):
+def install(serial: str = None):
     try:
         device = get_device(serial)
         logger.info(f"현재 장치: {device.serial}")
@@ -269,7 +269,7 @@ def iris_install(serial: str = None):
 
 
 @app.command(short_help="Iris.dex만 설치합니다")
-def iris_update(serial: str = None):
+def update(serial: str = None):
     try:
         device = get_device(serial)
         logger.info(f"현재 장치: {device.serial}")
@@ -281,7 +281,7 @@ def iris_update(serial: str = None):
 
 
 @app.command(short_help="iris를 실행합니다")
-def iris_start(serial: str = None):
+def start(serial: str = None):
     try:
         device = get_device(serial)
         logger.info(f"현재 장치: {device.serial}")
@@ -298,7 +298,7 @@ def iris_start(serial: str = None):
 
 
 @app.command(short_help="iris를 정지합니다")
-def iris_stop(serial: str = None):
+def stop(serial: str = None):
     try:
         device = get_device(serial)
         logger.info(f"현재 장치: {device.serial}")
@@ -311,7 +311,7 @@ def iris_stop(serial: str = None):
 
 
 @app.command(short_help="iris의 상태를 확인합니다")
-def iris_status(serial: str = None):
+def status(serial: str = None):
     try:
         device = get_device(serial)
         logger.info(f"현재 장치: {device.serial}")
@@ -338,7 +338,7 @@ def iris_status(serial: str = None):
 
 
 @app.command(short_help="iris의 URL로 접속을 시도합니다")
-def iris_check(iris_endpoint: str):
+def check(iris_endpoint: str):
     try:
         res = requests.get(f"{iris_endpoint}/config/info")
         res.raise_for_status()
@@ -349,7 +349,7 @@ def iris_check(iris_endpoint: str):
 
 
 @app.command(short_help="iris 로그를 추출합니다")
-def iris_log(
+def log(
     serial: str = None,
     export: Annotated[bool, typer.Option("--export", "-e")] = False,
 ):
@@ -366,12 +366,12 @@ def iris_log(
         device.pull(IRIS_LOG_PATH, path)
         logger.success(f"{path} 에 로그가 추출되었습니다")
         return
-
-    print(device.shell(f"tail {IRIS_LOG_PATH}").strip())
+    else:
+        print(device.shell(f"tail {IRIS_LOG_PATH}").strip())
 
 
 @app.command(short_help="연결된 기기의 IP를 확인합니다")
-def ip_check(serial: str = None):
+def ip(serial: str = None):
     try:
         device = get_device(serial)
         logger.info(f"현재 장치: {device.serial}")
