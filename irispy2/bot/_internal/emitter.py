@@ -28,7 +28,7 @@ class EventEmitter:
             func(*args)
         except Exception as e:
             if name == "error":
-                logger.error("error handler에서 오류가 발생했습니다")
+                logger.error(f"error handler에서 오류가 발생했습니다 ({e})")
                 return
 
             self.emit(
