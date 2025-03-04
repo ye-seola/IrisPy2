@@ -3,13 +3,14 @@ import typing as t
 
 import uvicorn
 from fastapi import BackgroundTasks, FastAPI
-from irispy2.bot._internal import EventEmitter, IrisAPI, IrisRequest
+from irispy2.bot._internal.emitter import EventEmitter
+from irispy2.bot._internal.iris import IrisAPI, IrisRequest
 from irispy2.bot.models import ChatContext, Message, Room, User
 
 
 class Bot:
-    def __init__(self, iris_endpoint: str):
-        self.emitter = EventEmitter()
+    def __init__(self, iris_endpoint: str, *, max_workers=None):
+        self.emitter = EventEmitter(max_workers=max_workers)
 
         self.api = IrisAPI(iris_endpoint)
 

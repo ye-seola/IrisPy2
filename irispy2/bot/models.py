@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import typing as t
-from irispy2.bot._internal import IrisAPI
+from irispy2.bot._internal.iris import IrisAPI
 from loguru import logger
 
 
@@ -67,3 +67,11 @@ class ChatContext:
             self.__api.reply_media(room_id, type, files)
         except Exception as e:
             logger.error(f"reply_media 오류: {e}")
+
+
+@dataclass
+class ErrorContext:
+    event: str
+    func: t.Callable
+    exception: Exception
+    args: list[t.Any]
