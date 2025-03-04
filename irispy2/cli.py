@@ -12,6 +12,7 @@ from loguru import logger
 from ppadb.client import Client as AdbClient
 from ppadb.device import Device
 
+IRIS_PACKAGE_NAME = "party.qwer.iris.Main"
 IRIS_CONFIG_PATH = "/data/local/tmp/config.json"
 IRIS_INSTALL_PATH = "/data/local/tmp/Iris.dex"
 IRIS_LOG_PATH = "/data/local/tmp/iris.log"
@@ -105,7 +106,7 @@ def _iris_start(device: Device):
             return
 
         device.shell(
-            f'su -c "nohup env CLASSPATH={IRIS_INSTALL_PATH} /system/bin/app_process  / --nice-name={IRIS_PROCESS_NAME} Iris > {IRIS_LOG_PATH} 2>&1 &"'
+            f'su -c "nohup env CLASSPATH={IRIS_INSTALL_PATH} /system/bin/app_process  / --nice-name={IRIS_PROCESS_NAME} {IRIS_PACKAGE_NAME} > {IRIS_LOG_PATH} 2>&1 &"'
         )
         time.sleep(1)
     else:
