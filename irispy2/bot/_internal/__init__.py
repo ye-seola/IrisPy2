@@ -50,9 +50,7 @@ class IrisAPI:
             json={
                 "type": "image_multiple",
                 "room": str(room_id),
-                "data": json.dumps(
-                    list(map(lambda v: base64.b64encode(v).decode(), files))
-                ),
+                "data": list(map(lambda v: base64.b64encode(v).decode(), files)),
             },
         )
         return self.__parse(res)
