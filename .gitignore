@@ -4,3 +4,4 @@ __pycache__/
 dist/
 *.log
 .DS_Store
+config.json
