@@ -1,7 +1,7 @@
 import contextvars
 from dataclasses import dataclass
 import typing as t
-from irispy2.bot._internal import IrisAPI
+from irispy2.bot._internal.iris import IrisAPI
 from loguru import logger
 
 

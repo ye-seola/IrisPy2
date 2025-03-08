@@ -3,7 +3,7 @@ import os
 import typing
 from PIL import Image
 
-from irispy2.bot._internal import IrisAPI
+from irispy2.bot._internal.iris import IrisAPI
 from irispy2.bot.models import ChatContext
 
 
