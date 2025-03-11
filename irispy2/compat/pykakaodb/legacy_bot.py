@@ -19,6 +19,7 @@ class LegacyBot(Bot):
         if bot_name is None or bot_id is None:
             logger.info("bot_name 또는 bot_id가 주어지지 않아 Iris에서 불러옵니다.")
             self.__load_config()
+            logger.info(self.__info)
 
         self._ctx = context.PyKakaoDBContext(self.__bot_id, self.__bot_name, self.api)
         context.set_context(self._ctx)

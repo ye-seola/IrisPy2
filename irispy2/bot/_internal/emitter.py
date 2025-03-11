@@ -1,4 +1,5 @@
 import concurrent.futures
+import traceback
 import typing as t
 from loguru import logger
 from irispy2.bot.models import ErrorContext
@@ -29,7 +30,11 @@ class EventEmitter:
         except Exception as e:
             if name == "error":
                 logger.error(f"error handler에서 오류가 발생했습니다 ({e})")
+                traceback.print_exc()
                 return
+            else:
+                logger.error(f"오류가 발생했습니다 ({e})")
+                traceback.print_exc()
 
             self.emit(
                 "error", [ErrorContext(event=name, func=func, exception=e, args=args)]

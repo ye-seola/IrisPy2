@@ -18,15 +18,15 @@ class IrisAPI:
 
     def __parse(self, res: requests.Response) -> dict:
         try:
-            res: dict = res.json()
+            data: dict = res.json()
         except Exception:
             raise Exception(f"Iris 응답 JSON 파싱 오류: {res.text}")
 
-        if res.get("success") is False:
+        if not 200 <= res.status_code <= 299:
             logger.debug(f"Iris 오류: {res}")
-            raise Exception(f"Iris 오류: {res.get('error', '알 수 없는 오류')}")
+            raise Exception(f"Iris 오류: {data.get('message', '알 수 없는 오류')}")
 
-        return res
+        return data
 
     def reply(self, room_id: int, msg: str):
         res = requests.post(
@@ -71,7 +71,5 @@ class IrisAPI:
         return res.get("data", [])
 
     def get_info(self):
-        res = requests.get(f"{self.iris_endpoint}/config/info")
-        res = self.__parse(res)
-
-        return res.get("message", {})
+        res = requests.get(f"{self.iris_endpoint}/config")
+        return self.__parse(res)

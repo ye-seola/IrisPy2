@@ -14,7 +14,7 @@ from ppadb.device import Device
 
 IRIS_PACKAGE_NAME = "party.qwer.iris.Main"
 IRIS_CONFIG_PATH = "/data/local/tmp/config.json"
-IRIS_INSTALL_PATH = "/data/local/tmp/Iris.dex"
+IRIS_INSTALL_PATH = "/data/local/tmp/Iris.apk"
 IRIS_LOG_PATH = "/data/local/tmp/iris.log"
 IRIS_PROCESS_NAME = "Iris.app_process"
 
@@ -140,15 +140,15 @@ def iris_dex_install(device: Device, start=False):
 
     data = res.json()
     iris_asset = next(
-        (asset for asset in data["assets"] if asset["name"] == "Iris.dex"), None
+        (asset for asset in data["assets"] if asset["name"] == "Iris.apk"), None
     )
 
     if not iris_asset:
-        logger.error("Iris.dex를 릴리즈에서 찾을 수 없습니다")
+        logger.error("Iris.apk를 릴리즈에서 찾을 수 없습니다")
         return
 
     with tempfile.NamedTemporaryFile() as tmp:
-        logger.info("Iris.dex를 다운로드하고 있습니다")
+        logger.info("Iris.apk를 다운로드하고 있습니다")
         iris_res = requests.get(
             iris_asset["browser_download_url"], allow_redirects=True
         )
@@ -228,7 +228,7 @@ def iris_install_ask(device: Device):
     }
 
 
-@app.command(short_help="Iris.dex 설치와 설정을 진행합니다")
+@app.command(short_help="Iris.apk 설치와 설정을 진행합니다")
 def install(serial: str = None):
     try:
         device = get_device(serial)
@@ -269,7 +269,7 @@ def install(serial: str = None):
             print()
 
 
-@app.command(short_help="Iris.dex만 설치합니다")
+@app.command(short_help="Iris.apk만 설치합니다")
 def update(serial: str = None):
     try:
         device = get_device(serial)
