@@ -1,15 +1,16 @@
+from dataclasses import dataclass
 import requests
 from loguru import logger
 import typing as t
 import base64
-from pydantic import BaseModel, Field
 
 
-class IrisRequest(BaseModel):
+@dataclass
+class IrisRequest:
     msg: str
     room: str
     sender: str
-    raw: dict = Field(..., alias="json")
+    raw: dict
 
 
 class IrisAPI:

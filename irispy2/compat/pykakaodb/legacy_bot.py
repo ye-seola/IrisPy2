@@ -8,8 +8,8 @@ import typing as t
 
 
 class LegacyBot(Bot):
-    def __init__(self, iris_endpoint, bot_id: int = None, bot_name: str = None):
-        super().__init__(iris_endpoint)
+    def __init__(self, iris_url, bot_id: int = None, bot_name: str = None):
+        super().__init__(iris_url)
 
         self.__state = {}
 

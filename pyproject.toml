@@ -8,9 +8,8 @@ dependencies = [
     "typer (>=0.15.2,<0.16.0)",
     "requests (>=2.32.3,<3.0.0)",
     "loguru (>=0.7.3,<0.8.0)",
-    "fastapi (>=0.115.10,<0.116.0)",
-    "uvicorn (>=0.34.0,<0.35.0)",
     "pure-python-adb (==0.3.0.dev)",
+    "websockets (>=15.0.1,<16.0.0)",
 ]
 dynamic = ["version"]
 

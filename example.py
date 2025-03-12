@@ -2,7 +2,7 @@ from irispy2 import Bot, ChatContext
 from irispy2.bot.models import ErrorContext
 
 
-bot = Bot(iris_endpoint="http://192.168.35.144:3000")
+bot = Bot(iris_url="http://192.168.35.173:3000")
 
 
 @bot.on_event("message")
@@ -20,7 +20,7 @@ def on_message(chat: ChatContext):
         )
 
     if chat.message.msg == "!err":
-        0/0
+        0 / 0
 
 
 @bot.on_event("new_member")
@@ -39,4 +39,4 @@ def on_error(err: ErrorContext):
 
 
 if __name__ == "__main__":
-    bot.run(port=9870)
+    bot.run()

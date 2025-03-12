@@ -3,7 +3,7 @@ import threading
 
 from irispy2.compat.pykakaodb.context import copy_context
 
-bot = LegacyBot(iris_endpoint="http://192.168.35.144:3000")
+bot = LegacyBot(iris_url="http://192.168.35.173:3000")
 
 
 # @bot.response를 추가해주세요
@@ -50,4 +50,4 @@ def response(
 
 
 if __name__ == "__main__":
-    bot.run(port=9870)
+    bot.run()

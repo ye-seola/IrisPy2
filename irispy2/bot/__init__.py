@@ -1,23 +1,31 @@
 import json
+import time
 import typing as t
 
-import uvicorn
-from fastapi import BackgroundTasks, FastAPI
+from loguru import logger
+from websockets.sync.client import connect
 from irispy2.bot._internal.emitter import EventEmitter
 from irispy2.bot._internal.iris import IrisAPI, IrisRequest
 from irispy2.bot.models import ChatContext, Message, Room, User
 
 
 class Bot:
-    def __init__(self, iris_endpoint: str, *, max_workers=None):
+    def __init__(self, iris_url: str, *, max_workers=None):
         self.emitter = EventEmitter(max_workers=max_workers)
 
-        self.api = IrisAPI(iris_endpoint)
-
-        self.fastapi = FastAPI()
-        self.fastapi.add_api_route(
-            path="/db", endpoint=self.__on_iris_request, methods=["POST"]
+        self.iris_url = iris_url
+        self.iris_ws_endpoint = (
+            iris_url.replace(
+                "http://",
+                "ws://",
+            ).replace(
+                "https://",
+                "wss://",
+            )
+            + "/ws"
         )
+
+        self.api = IrisAPI(iris_url)
 
     def __process_chat(self, chat: ChatContext):
         self.emitter.emit("chat", [chat])
@@ -52,16 +60,28 @@ class Bot:
         )
         self.__process_chat(chat)
 
-    def __on_iris_request(self, req: IrisRequest, background_tasks: BackgroundTasks):
-        background_tasks.add_task(self.__process_iris_request, req)
-        return {}
+    def run(self):
+        while True:
+            try:
+                with connect(self.iris_ws_endpoint, close_timeout=0) as ws:
+                    logger.info("웹소켓에 연결되었습니다")
+                    while True:
+                        recv = ws.recv()
+                        try:
+                            data: dict = json.loads(recv)
+                            data["raw"] = data.get("json")
+                            del data["json"]
 
-    def run(self, port: int, host="0.0.0.0"):
-        uvicorn.run(
-            app=self.fastapi,
-            host=host,
-            port=port,
-        )
+                            self.__process_iris_request(IrisRequest(**data))
+                        except Exception as e:
+                            logger.error(
+                                "Iris 이벤트를 처리 중 오류가 발생했습니다: {}", e
+                            )
+            except Exception as e:
+                logger.error("웹소켓 연결 오류: {}", e)
+                logger.error("3초 후 재연결합니다")
+
+            time.sleep(3)
 
     def on_event(self, name: str):
         def decorator(func: t.Callable):
