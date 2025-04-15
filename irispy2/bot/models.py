@@ -15,8 +15,8 @@ class Message:
     attachment: str
     v: dict
     command : str
-    has_param : bool
-    param : t.Optional[str] = None
+    has_params : bool
+    params : t.Optional[str] = None
 
 
 @dataclass
