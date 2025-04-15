@@ -48,10 +48,8 @@ class Bot:
         room = Room(id=int(req.raw["chat_id"]), name=req.room)
         sender = User(id=int(req.raw["user_id"]), name=req.sender, api=self.api)
         msg = req.raw["message"]
-        msg_split = msg.split(" ", 1)
-        command = msg_split[0]
-        has_param = len(msg_split) > 1
-        param = msg_split[1] if has_param else None
+        command, *params = msg.split(" ", 1)
+        has_params = len(params) > 0
         message = Message(
             id=int(req.raw["id"]),
             type=int(req.raw["type"]),
@@ -59,8 +57,8 @@ class Bot:
             attachment=req.raw["attachment"],
             v=v,
             command = command,
-            has_param = has_param,
-            param = param,
+            has_params = has_params,
+            params = params[0] if has_params else None,
         )
 
         chat = ChatContext(
