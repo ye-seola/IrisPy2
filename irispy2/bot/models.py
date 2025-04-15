@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from functools import cached_property
 import io
 import traceback
 import typing as t
@@ -13,6 +14,9 @@ class Message:
     msg: str
     attachment: str
     v: dict
+    command : str
+    has_param : bool
+    param : t.Optional[str] = None
 
 
 @dataclass
@@ -25,6 +29,25 @@ class Room:
 class User:
     id: int
     name: str
+    _api: IrisAPI = field(repr=False)
+
+    def __init__(self, id: int, name: str, api: IrisAPI):
+        self.id = id
+        self.name = name
+        self._api = api
+
+    @cached_property
+    def avatar(self) -> t.Optional[str]:
+        try:
+            results = self._api.query(
+                'select original_profile_image_url,enc from db2.open_chat_member where user_id = ?',
+                [self.id]
+            )
+            print(results)
+            return results[0].get("original_profile_image_url")
+
+        except Exception as e:
+            return None
 
 
 @dataclass(init=False)
