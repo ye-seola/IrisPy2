@@ -43,7 +43,6 @@ class User:
                 'select original_profile_image_url,enc from db2.open_chat_member where user_id = ?',
                 [self.id]
             )
-            print(results)
             return results[0].get("original_profile_image_url")
 
         except Exception as e:
