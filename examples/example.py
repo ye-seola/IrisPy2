@@ -18,10 +18,10 @@ def on_message(chat: ChatContext):
             "IMAGE",
             [
                 # IO로 보내기
-                open("./example-assets/martin-woortman-HmS5_Gr_0cI-unsplash.jpg", "rb"),
-
+                open("./assets/martin-woortman-HmS5_Gr_0cI-unsplash.jpg", "rb"),
+                
                 # bytes로 보내기
-                open("./example-assets/ririchiyo.webp", "rb").read(),
+                open("./assets/ririchiyo.webp", "rb").read(),
             ],
         )
 

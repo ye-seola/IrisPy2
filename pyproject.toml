@@ -1,35 +1,19 @@
 [project]
 name = "irispy2"
+version = "3.4.0"
 description = ""
 authors = [{ name = "ye-seola", email = "ye-seola@proton.me" }]
+requires-python = ">=3.9"
 readme = "README.md"
-requires-python = ">=3.9,<4.0"
 dependencies = [
-    "typer (>=0.15.2,<0.16.0)",
     "requests (>=2.32.3,<3.0.0)",
     "loguru (>=0.7.3,<0.8.0)",
     "pure-python-adb (==0.3.0.dev)",
     "websockets (>=15.0.1,<16.0.0)",
 ]
-dynamic = ["version"]
 
 [project.optional-dependencies]
 pykakaodb-compat = ["pillow"]
 
-[build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
-
-[tool.poetry]
-version = "0.0.0"
-
-[tool.poetry.scripts]
+[project.scripts]
 iris-tools = "irispy2.cli:app"
-
-[tool.poetry.requires-plugins]
-poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
-
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
