@@ -1,6 +1,6 @@
 [project]
 name = "irispy2"
-version = "3.4.0"
+version = "3.4.1"
 description = ""
 authors = [{ name = "ye-seola", email = "ye-seola@proton.me" }]
 requires-python = ">=3.9"
