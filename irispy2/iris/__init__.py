@@ -39,12 +39,9 @@ class IrisAPI:
     def reply_media(
         self,
         room_id: int,
-        type: t.Literal["IMAGE"],
+        type: str,
         files: list[bytes],
     ):
-        if type != "IMAGE":
-            raise Exception("지원하지 않는 타입입니다")
-
         res = requests.post(
             f"{self.iris_endpoint}/reply",
             json={

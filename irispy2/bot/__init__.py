@@ -4,9 +4,15 @@ import typing as t
 
 from loguru import logger
 from websockets.sync.client import connect
-from irispy2.bot._internal.emitter import EventEmitter
-from irispy2.bot._internal.iris import IrisAPI, IrisRequest
-from irispy2.bot.models import ChatContext, Message, Room, User
+from irispy2.bot.services import (
+    ChannelService,
+    DecryptService,
+    MessageService,
+    UserService,
+)
+from irispy2.core.emitter import EventEmitter
+from irispy2.iris import IrisAPI, IrisRequest
+from irispy2.bot.models import ChatEvent, Message, Channel, User
 
 
 class Bot:
@@ -27,7 +33,13 @@ class Bot:
 
         self.api = IrisAPI(iris_url)
 
-    def __process_chat(self, chat: ChatContext):
+        my_user_id = self.api.get_info()["bot_id"]
+        self.decrypt_service = DecryptService(my_user_id)
+        self.user_service = UserService(self.api, self.decrypt_service)
+        self.channel_service = ChannelService(self.api, self.user_service)
+        self.message_service = MessageService(self.api, self.user_service)
+
+    def __process_chat(self, chat: ChatEvent):
         self.emitter.emit("chat", [chat])
 
         origin = chat.message.v.get("origin")
@@ -45,19 +57,31 @@ class Bot:
         except Exception:
             pass
 
-        room = Room(id=int(req.raw["chat_id"]), name=req.room)
-        sender = User(id=int(req.raw["user_id"]), name=req.sender)
+        attachment = {}
+        try:
+            attachment = json.loads(req.raw["attachment"])
+        except Exception:
+            pass
+
+        channel = Channel(id=int(req.raw["chat_id"]))
+        channel._name = req.room
+        channel._channel_service = self.channel_service
+
+        sender = User(id=int(req.raw["user_id"]))
+        sender._name = req.sender
+        sender._user_service = self.user_service
+
         message = Message(
             id=int(req.raw["id"]),
             type=int(req.raw["type"]),
-            msg=req.raw["message"],
-            attachment=req.raw["attachment"],
+            content=req.raw["message"],
+            attachment=attachment,
             v=v,
+            sender=sender,
         )
+        message._message_service = self.message_service
 
-        chat = ChatContext(
-            room=room, sender=sender, message=message, raw=req.raw, api=self.api
-        )
+        chat = ChatEvent(channel=channel, sender=sender, message=message, raw=req.raw)
         self.__process_chat(chat)
 
     def run(self):

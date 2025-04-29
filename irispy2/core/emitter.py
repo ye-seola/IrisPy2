@@ -2,7 +2,15 @@ import concurrent.futures
 import traceback
 import typing as t
 from loguru import logger
-from irispy2.bot.models import ErrorContext
+from dataclasses import dataclass
+
+
+@dataclass
+class ErrorContext:
+    event: str
+    func: t.Callable
+    exception: Exception
+    args: list[t.Any]
 
 
 class EventEmitter:

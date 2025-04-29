@@ -1,88 +1,130 @@
-from dataclasses import dataclass
-import io
-import traceback
+from dataclasses import dataclass, field
+from enum import Enum
+from functools import cached_property
 import typing as t
-from irispy2.bot._internal.iris import IrisAPI
-from loguru import logger
+
+from irispy2.bot.services import MessageService, ChannelService, UserService, MediaType
+
+
+class MessageType(Enum):
+    FEED = 0
+    TEXT = 1
+    PHOTO = 2
+    VIDEO = 3
+    CONTACT = 4
+    AUDIO = 5
+    ANIMATED_EMOTICON = 6
+    DIGITAL_ITEM_GIFT = 7
+    LINK = 9
+    OLD_LOCATION = 10
+    AVATAR = 11
+    STICKER = 12
+    SCHEDULE = 13
+    VOTE = 14
+    LOCATION = 16
+    PROFILE = 17
+    FILE = 18
+    ANIMATED_STICKER = 20
+    NUDGE = 21
+    SPRITECON = 22
+    SHARP_SEARCH = 23
+    POST = 24
+    ANIMATED_STICKER_EX = 25
+    REPLY = 26
+    MULTI_PHOTO = 27
+    MVOIP = 51
+    VOX_ROOM = 52
+    LEVERAGE = 71
+    ALIMTALK = 72
+    PLUS_LEVERAGE = 73
+    PLUS = 81
+    PLUS_EVENT = 82
+    PLUS_VIRAL = 83
+    SCHEDULE_FOR_OPEN_LINK = 96
+    VOTE_FOR_OPEN_LINK = 97
+    POST_FOR_OPEN_LINK = 98
 
 
 @dataclass
 class Message:
+    _message_service: MessageService = field(init=False, default=None)
+
     id: int
     type: int
-    msg: str
-    attachment: str
+    content: str
+    attachment: dict
     v: dict
+    sender: "User"
+
+    @cached_property
+    def source(self) -> t.Optional["Message"]:
+        if self.type != MessageType.REPLY.value:
+            return None
+
+        log_id = self.attachment.get("src_logId")
+        if log_id:
+            return self._message_service.get_message_from_log_id(log_id)
 
 
 @dataclass
-class Room:
+class Channel:
+    _name: str = field(init=False, default=None)
+    _channel_service: ChannelService = field(init=False, default=None)
+
     id: int
-    name: str
+
+    @cached_property
+    def name(self):
+        if self._name is not None:
+            return self._name
+
+        custom_name = self._channel_service.get_custom_name(self.id)
+        if custom_name:
+            return custom_name
+
+        return self._channel_service.get_name(self.id)
+
+    @cached_property
+    def original_name(self):
+        return self._channel_service.get_name(self.id)
+
+    def send(self, message: str):
+        return self._channel_service.send(self.id, message)
+
+    def send_media(
+        self,
+        media_type: MediaType,
+        media: bytes | t.List[bytes],
+    ):
+        return self._channel_service.send_media(self.id, media_type, media)
 
 
 @dataclass
 class User:
+    _name: str = field(init=False, default=None)
+    _user_service: UserService = field(init=False, default=None)
+
     id: int
-    name: str
+
+    @cached_property
+    def name(self) -> t.Optional[str]:
+        if self._name is not None:
+            return self._name
+
+        return self._user_service.get_name(self.id)
+
+    @cached_property
+    def link_id(self) -> t.Optional[str]:
+        return self._user_service.get_link_id(self.id)
+
+    @cached_property
+    def profile_url(self) -> t.Optional[str]:
+        return self._user_service.get_profile_url(self.id)
 
 
-@dataclass(init=False)
-class ChatContext:
-    room: Room
+@dataclass()
+class ChatEvent:
+    channel: Channel
     sender: User
     message: Message
     raw: dict
-
-    def __init__(
-        self, room: Room, sender: User, message: Message, raw: dict, api: IrisAPI
-    ):
-        self.__api = api
-        self.room = room
-        self.sender = sender
-        self.message = message
-        self.raw = raw
-
-    def reply(self, message: str, room_id=None):
-        if room_id is None:
-            room_id = self.room.id
-
-        try:
-            self.__api.reply(room_id, message)
-        except Exception as e:
-            logger.error(f"reply 오류: {e}")
-
-    def reply_media(
-        self,
-        mediaType: t.Literal["IMAGE"],
-        files: list[t.IO[bytes] | bytes],
-        room_id=None,
-    ):
-        if room_id is None:
-            room_id = self.room.id
-
-        if mediaType != "IMAGE":
-            raise Exception("지원하지 않는 타입입니다")
-
-        def convert(e: t.IO[bytes] | bytes):
-            if isinstance(e, io.BufferedIOBase):
-                return e.read()
-            elif isinstance(e, bytes):
-                return e
-            else:
-                raise Exception(f"알 수 없는 타입입니다 {type(e)}")
-
-        try:
-            files: list[bytes] = list(map(convert, files))
-            self.__api.reply_media(room_id, mediaType, files)
-        except Exception as e:
-            traceback.print_exc()
-            logger.error(f"reply_media 오류: {e}")
-
-
-@dataclass
-class ErrorContext:
-    event: str
-    func: t.Callable
-    exception: Exception
-    args: list[t.Any]

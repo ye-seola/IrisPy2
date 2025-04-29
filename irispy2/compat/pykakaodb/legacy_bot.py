@@ -1,7 +1,7 @@
 from irispy2.bot import Bot
 from loguru import logger
 
-from irispy2.bot.models import ChatContext
+from irispy2.bot.models import ChatEvent
 from irispy2.compat.pykakaodb import KakaoDB, Replier
 from irispy2.compat.pykakaodb import context
 import typing as t
@@ -45,11 +45,11 @@ class LegacyBot(Bot):
         logger.info(f"bot_id: {self.__bot_id}, bot_name: {self.__bot_name}")
 
     def response(self, func: t.Callable):
-        def response_wrapper(chat: ChatContext):
+        def response_wrapper(chat: ChatEvent):
             replier = Replier(chat, self.api)
             func(
-                chat.room.name,
-                chat.message.msg,
+                chat.channel.name,
+                chat.message.content,
                 chat.sender.name,
                 replier,
                 chat.raw,

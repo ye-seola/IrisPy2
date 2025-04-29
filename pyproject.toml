@@ -10,6 +10,7 @@ dependencies = [
     "loguru (>=0.7.3,<0.8.0)",
     "pure-python-adb (==0.3.0.dev)",
     "websockets (>=15.0.1,<16.0.0)",
+    "pycryptodome>=3.22.0",
 ]
 
 [project.optional-dependencies]
